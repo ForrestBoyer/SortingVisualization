@@ -95,9 +95,27 @@ def BogoSort(arr):
         win.blit(text_surface, (10, 10))
         pygame.display.update()
 
+def Partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            swap(arr, i, j)
+    
+    swap(arr, i + 1, high)
+    return i + 1
+
+def Quicksort(arr, low, high):
+    if low < high:
+        index = Partition(arr, low, high)
+        Quicksort(arr, low, index - 1)
+        Quicksort(arr, index + 1, high)
+
 #   SETTINGS
-size = 200
-num_items = 10
+size = 1000
+num_items = 100
 delay = 0
 startX = 0
 startY = 50
@@ -105,7 +123,7 @@ randomNumbers = False
 
 #   CALCULATED SETTINGS
 width = size / num_items
-height = size / num_items
+height = size / num_items 
 sizeX = num_items * width
 sizeY = num_items * height
 
@@ -116,7 +134,8 @@ functions = {
     'InsertionSort': (InsertionSort, (arr, 0)),
     'SelectionSort': (SelectionSort, (arr, )),
     'BubbleSort': (BubbleSort, (arr, )),
-    'BogoSort': (BogoSort, (arr, ))
+    'BogoSort': (BogoSort, (arr, )),
+    'Quicksort': (Quicksort, (arr, 0, num_items - 1))
 }
 running = False
 win = pygame.display.set_mode((sizeX, sizeY))
@@ -153,6 +172,12 @@ while True:
             if event.key == pygame.K_r:
                 random.shuffle(arr)
                 draw(arr)
+            elif event.key == pygame.K_a:
+                running = True
+                func = random.choice(list(functions))
+                thread = Thread(target=SortRunner, args = (functions[func],))
+                thread.daemon = True
+                thread.start()
             elif event.key == pygame.K_h:
                 running = True
                 thread = Thread(target=SortRunner, args=(functions['HeapSort'],))
@@ -176,5 +201,10 @@ while True:
             elif event.key == pygame.K_x:
                 running = True
                 thread = Thread(target=SortRunner, args=(functions['BogoSort'],))
+                thread.daemon = True
+                thread.start()
+            elif event.key == pygame.K_q:
+                running = True
+                thread = Thread(target=SortRunner, args=(functions['Quicksort'],))
                 thread.daemon = True
                 thread.start()
