@@ -25,6 +25,24 @@ def draw(arr: list, highlights: list = None, color: tuple[int, int, int] = None)
             pygame.draw.rect(win, (255, 0, 0), (startX + width * i, sizeY - arr[i] * height, width, arr[i] * height))
     pygame.display.update()
 
+def drawInstructions():
+    mappings = [
+        "Heap Sort: h",
+        "Insertion Sort: i",
+        "Selection Sort: s",
+        "Bubble Sort: b",
+        "Quick Sort: q",
+        "Bogo Sort: x",
+    ]
+    text_surface = font.render("These are the available sorts and their respectives controls", True, (255, 255, 255))
+    win.blit(text_surface, (0, 0))
+
+    for i in range(0, len(mappings), 1):
+        text_surface = font.render(mappings[i], True, (255, 255, 255))
+        win.blit(text_surface, (10, (i * 30) + 30))
+
+    pygame.display.update()
+
 def HeapSort(arr):
     BuildMaxHeap(arr)
     for i in range(len(arr) - 1, 0, -1):
@@ -150,6 +168,14 @@ def SortRunner(sort):
     draw(arr)
     running = False
 
+def RunRandom():
+    global running
+    running = True
+    func = random.choice(list(functions))
+    thread = Thread(target=SortRunner, args = (functions[func],))
+    thread.daemon = True
+    thread.start()
+
 #  MAIN
 if randomNumbers:
     for i in range(num_items):
@@ -160,6 +186,7 @@ else:
     random.shuffle(arr)
 
 draw(arr)
+drawInstructions()
 
 while True:
     keys = pygame.key.get_pressed()
@@ -172,12 +199,9 @@ while True:
             if event.key == pygame.K_r:
                 random.shuffle(arr)
                 draw(arr)
+                drawInstructions()
             elif event.key == pygame.K_a:
-                running = True
-                func = random.choice(list(functions))
-                thread = Thread(target=SortRunner, args = (functions[func],))
-                thread.daemon = True
-                thread.start()
+                RunRandom()
             elif event.key == pygame.K_h:
                 running = True
                 thread = Thread(target=SortRunner, args=(functions['HeapSort'],))
