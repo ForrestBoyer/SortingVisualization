@@ -104,6 +104,10 @@ def BogoSort(arr):
                 sorted = False
                 break
         if sorted:
+            draw(arr)
+            text_surface = font.render(str(bogoCount), True, (255, 255, 255))
+            win.blit(text_surface, (10, 10))
+            pygame.display.update()
             return
         else:
             bogoCount += 1
@@ -165,7 +169,6 @@ def SortRunner(sort):
     global running
     func, args = sort
     func(*args)
-    draw(arr)
     running = False
 
 def RunRandom():
